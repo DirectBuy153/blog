@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Link and Image Upload Search</title>
+    <style>
+        #linkList {
+            display: none; /* Hide the link list */
+        }
+        .result-image {
+            max-width: 200px;
+            display: block;
+            margin-top: 10px;
+        }
+    </style>
+    <script>
+        let links = {};
+
+        function addLink() {
+            let linkInput = document.getElementById("linkInput").value;
+            let fileInput = document.getElementById("fileInput").files[0];
+            let linkNumber = Object.keys(links).length + 1;
+
+            if (linkInput && fileInput) {
+                let reader = new FileReader();
+                reader.onload = function (e) {
+                    links[linkNumber] = { url: linkInput, imageUrl: e.target.result };
+                    document.getElementById("linkList").innerHTML += `<li>Link ${linkNumber}: <a href="${linkInput}" target="_blank">${linkInput}</a> <img src="${e.target.result}" class="result-image"></li>`;
+                    document.getElementById("linkInput").value = "";
+                    document.getElementById("fileInput").value = "";
+                };
+                reader.readAsDataURL(fileInput);
+            } else {
+                alert("Please enter a link and select an image.");
+            }
+        }
+
+        function searchLink() {
+            let searchNumber = document.getElementById("searchInput").value;
+            if (searchNumber && links[searchNumber]) {
+                let result = links[searchNumber];
+                document.getElementById("searchResult").innerHTML = `<img src="${result.imageUrl}" class="result-image"> <a href="${result.url}" target="_blank">${result.url}</a>`;
+            } else {
+                document.getElementById("searchResult").innerText = "Link not found.";
+            }
+        }
+
+        document.addEventListener("DOMContentLoaded", function() {
+            document.getElementById("searchInput").addEventListener("keyup", function(event) {
+                if (event.key === "Enter") {
+                    searchLink();
+                }
+            });
+        });
+    </script>
+</head>
+<body>
+    <h1>FIND PRODUCT HERE</h1>
+    <div id="adminSection"> <!-- Admin input section -->
+        <input type="text" id="linkInput" placeholder="Enter URL">
+        <input type="file" id="fileInput">
+        <button onclick="addLink()">Add Link</button>
+    </div>
+    <ul id="linkList"></ul>
+    <div style="margin-top: 20px;">
+        <input type="text" id="searchInput" placeholder="Enter Link Number">
+        <button onclick="searchLink()">Search</button>
+        <div id="searchResult"></div>
+    </div>
+    <script>
+        // Hide the admin section after adding links
+        function hideAdminSection() {
+            document.getElementById("adminSection").style.display = "none";
+        }
+        // Uncomment the next line to hide the admin section
+        // hideAdminSection();
+    </script>
+</body>
+</html>
